@@ -13,7 +13,8 @@ module Remit
     #++
     def valid?
       return false unless given_signature
-      Relax::Query.unescape_value(correct_signature) == given_signature
+      #unescape both sides.  now it will work even if the given_signature is escaped
+      Relax::Query.unescape_value(correct_signature) == Relax::Query.unescape_value(given_signature)
     end
 
     # Returns +true+ if the response returns a successful state.
