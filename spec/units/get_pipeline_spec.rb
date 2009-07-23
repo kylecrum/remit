@@ -9,7 +9,7 @@ describe 'A pipeline', :shared => true do
 
   it 'should sign its URL' do
     uri = URI.parse(@pipeline.url)
-    pipeline = Remit::SignedQuery.parse(uri, remit.secret_key, uri.query)
+    pipeline = Remit::SignedQuery.new(uri, remit.secret_key, uri.query)
     query = Relax::Query.parse(uri)
 
     pipeline[:awsSignature].should == query[:awsSignature]

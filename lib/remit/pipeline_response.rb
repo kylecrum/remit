@@ -35,7 +35,7 @@ module Remit
     end
 
     def request_query(reload = false)
-      @query ||= Remit::SignedQuery.parse(@uri, @secret_key, @uri.query || '')
+      @query ||= Remit::SignedQuery.new(@uri, @secret_key)
     end
     private :request_query
 

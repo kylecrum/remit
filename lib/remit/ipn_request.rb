@@ -32,10 +32,7 @@ module Remit
     end
 
     def generate_signature_for(params)
-      query   = params.sort_by { |k,v| k.downcase }
-      digest  = OpenSSL::Digest::Digest.new('sha1')
-      hmac    = OpenSSL::HMAC.digest(digest, @secret_key, query.to_s)
-      encoded = Base64.encode64(hmac).chomp
+      SignedQuery.signature(@secret_key,params)
     end
     private :generate_signature_for
 

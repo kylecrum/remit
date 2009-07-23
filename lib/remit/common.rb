@@ -55,33 +55,50 @@ module Remit
     end
   end
 
+  #do we really need to pass in a uri and query params?  Can't we just pass in the uri?
   class SignedQuery < Relax::Query
     def initialize(uri, secret_key, query={})
       super(query)
       @uri = URI.parse(uri.to_s)
+      parse_uri #values in the uri take precedence over the ones in the query
       @secret_key = secret_key
     end
 
     def sign
       delete(:awsSignature)
-      store(:awsSignature, Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::SHA1.new, @secret_key, "#{@uri.path}?#{to_s(false)}".gsub('%20', '+'))).strip)
+      store(:awsSignature, signature)
     end
 
     def to_s(signed=true)
       sign if signed
       super()
     end
+    
+    def signature
+      self.class.signature(@secret_key,self)
+    end
+    
+    def parse_uri
+      if @uri.query
+        @uri.query.split('&').each do |parameter|
+          key, value = parameter.split('=', 2)
+          self[key] = self.class.unescape_value(value)
+        end
+      end
+    end
+    private :parse_uri
 
     class << self
-      def parse(uri, secret_key, query_string)
-        query = self.new(uri, secret_key)
+      
+      def signature(secret_key,hashable = {})
+        keys = hashable.keys.sort { |a, b| a.to_s.downcase <=> b.to_s.downcase }
 
-        query_string.split('&').each do |parameter|
-          key, value = parameter.split('=', 2)
-          query[key] = unescape_value(value)
+        signature = keys.inject('') do |signature, key|
+          value = hashable[key]
+          signature += key.to_s + value.to_s if value
         end
 
-        query
+        Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest::SHA1.new, secret_key, signature)).strip
       end
     end
   end
