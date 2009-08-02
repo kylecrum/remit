@@ -34,6 +34,10 @@ module Remit
         super
       end
     end
+    
+    def signature_key
+      :awsSignature
+    end
 
     def request_query(reload = false)
       @query ||= Remit::SignedQuery.new(@uri, @secret_key)
@@ -41,12 +45,14 @@ module Remit
     private :request_query
 
     def given_signature
-      request_query[:awsSignature]
+      request_query[signature_key]
     end
     private :given_signature
 
     def correct_signature
-      Remit::SignedQuery.new(@uri.path, @secret_key, request_query).sign
+      query_params = request_query.clone
+      query_params.delete(signature_key)
+      Remit::SignedQuery.signature(FPS_SECRET_KEY,query_params)
     end
     private :correct_signature
   end

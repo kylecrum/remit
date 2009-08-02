@@ -65,8 +65,8 @@ module Remit
     end
 
     def sign
-      delete(:awsSignature)
-      store(:awsSignature, signature)
+      delete(signature_key)
+      store(signature_key, signature)
     end
 
     def to_s(signed=true)
@@ -76,6 +76,10 @@ module Remit
     
     def signature
       self.class.signature(@secret_key,self)
+    end
+    
+    def signature_key
+      :awsSignature
     end
     
     def parse_uri
