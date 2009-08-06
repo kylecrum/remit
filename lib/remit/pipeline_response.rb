@@ -28,8 +28,8 @@ module Remit
     end
 
     def method_missing(method, *args) #:nodoc:
-      if request_query.has_key?(proper_key)
-        request_query[proper_key]
+      if request_query.has_key?(method)
+        request_query[method]
       else
         super
       end
