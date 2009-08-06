@@ -28,8 +28,9 @@ module Remit
     end
 
     def method_missing(method, *args) #:nodoc:
-      if request_query.has_key?(method.to_sym)
-        request_query[method.to_sym]
+      proper_key = convert_key(method.to_s)
+      if request_query.has_key?(proper_key)
+        request_query[proper_key]
       else
         super
       end
@@ -38,6 +39,11 @@ module Remit
     def signature_key
       :awsSignature
     end
+    
+    def convert_key(key)
+      key.to_s.gsub(/_(.)/) { $1.upcase }.to_sym
+    end
+    private :convert_key
 
     def request_query(reload = false)
       @query ||= Remit::SignedQuery.new(@uri, @secret_key)
