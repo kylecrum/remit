@@ -26,6 +26,10 @@ module Remit
         Remit::PipelineStatusCode::SUCCESS_RECIPIENT_TOKEN_INSTALLED
       ].include?(request_query[:status])
     end
+    
+    def [](key)
+      request_query[key]
+    end
 
     def method_missing(method, *args) #:nodoc:
       if request_query.has_key?(method)
