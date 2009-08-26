@@ -44,6 +44,7 @@ module Remit
       parameter :zip
       parameter :country
       parameter :phone_number
+      parameter :website_description
 
       def initialize(api, options)
         @api = api
@@ -89,6 +90,7 @@ module Remit
       parameter :payment_method
       parameter :transaction_amount
       parameter :recipient_token
+      parameter :collect_shipping_address
       
       def pipeline_name
         Remit::PipelineName::SINGLE_USE

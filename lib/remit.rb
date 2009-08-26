@@ -120,7 +120,7 @@ module Remit
     private :query
 
     def sign(values)
-      SignedQuery.signature(values,@secret_key)
+      SignedQuery.signature(@secret_key,values)
     end
     private :sign
   end
